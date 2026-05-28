@@ -22,7 +22,6 @@ class Server:
         # This shoulden't be used, failsafe.
         if isinstance(response, str):
             response = response.encode()
-            if VERBOSE: Log.warning(f"Send data to client: Response {response} is string converting to bytes.")
 
         # Send the data
         client_socket.sendall(response)
@@ -38,32 +37,34 @@ class Server:
         # Process the client's request.
         headers = client_request.split('\n')
 
+        # Make sure the client sent correct headers.
         if not headers or len(headers[0].split()) < 2:
             client_socket.close()
             Log.error("Client failed to send correct headers, aborting.")
             return
         
         http_method = headers[0].split()[0]
-        path = headers[0].split()[1]
+        request_path = Path(str(BASE_DIR) + headers[0].split()[1])
+
+        abs_request_path = request_path.absolute()
 
         # Set file to serve.
         file_to_serve = None
-        if path == "/":
-            file_to_serve = f"{BASE_DIR}/index.html"
+        if request_path.is_dir():
+            file_to_serve = request_path.joinpath("index.md")
         else:
-            file_to_serve = f"{BASE_DIR}{path}"
+            file_to_serve = abs_request_path
         
         # Make sure the file should be served:
         base_dir = os.path.abspath(BASE_DIR)
-
         full_path = os.path.abspath(os.path.normpath(file_to_serve))
 
         if not full_path.startswith(base_dir + os.sep):
             response = "HTTP/1.1 403 FORBIDDEN\r\n\r\n403 FORBIDDEN"
-            self.send_data_to_client(client_socket, response, True)
+            self.send_data_to_client(client_socket, response)
             return
         
-        Log.message(f"Client requests: {full_path} from: {headers[1]}")
+        if VERBOSE: Log.message(f"Client requests: {full_path} from: {headers[1]}")
 
         # Try to serve the file.
         try:
