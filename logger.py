@@ -9,7 +9,7 @@ class Log:
         print(f"{text}")
     @staticmethod
     def warning(text):
-        print(f"{colorama.Fore.YELLOW}{colorama.Style.BRIGHT}{text}{colorama.Fore.RESET}{colorama.Style.RESET_ALL}")
+        print(f"{colorama.Fore.YELLOW}{colorama.Style.BRIGHT}WARNING: {text}{colorama.Fore.RESET}{colorama.Style.RESET_ALL}")
     @staticmethod
     def error(text):
-        print(f"{colorama.Fore.RED}{colorama.Style.BRIGHT}{text}{colorama.Fore.RESET}{colorama.Style.RESET_ALL}")
+        print(f"{colorama.Fore.RED}{colorama.Style.BRIGHT}ERROR: {text}{colorama.Fore.RESET}{colorama.Style.RESET_ALL}")
