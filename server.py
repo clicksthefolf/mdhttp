@@ -10,25 +10,31 @@ class MdToHtmlConverter:
 
         page_title = "No Title md file"
         html_body = ""
+
+        prev_char = ''
+        for line in md_file.splitlines():
+            for char in line:
+                if char == '*' and prev_char == "*":
+
         for line in md_file.split("\n"):
             if line.startswith("# "):
                 html_body += f"<h1>{line[2:]}</h1>\n"
-            if line.startswith("## "):
+            elif line.startswith("## "):
                 html_body += f"<h2>{line[3:]}</h2>\n"
-            if line.startswith("### "):
+            elif line.startswith("### "):
                 html_body += f"<h3>{line[4:]}</h3>\n"
-            if line.startswith("#### "):
+            elif line.startswith("#### "):
                 html_body += f"<h4>{line[5:]}</h4>\n"
-            if line.startswith("##### "):
+            elif line.startswith("##### "):
                 html_body += f"<h5>{line[6:]}</h5>\n"  
-            if line.startswith("###### "):
+            elif line.startswith("###### "):
                 html_body += f"<h6>{line[7:]}</h6>\n"
             else:
-                html_body += line
+                html_body += "<p>" + line + "</p>" + "\n"
         print(md_file.splitlines())
         print("End print")
-            
-        html_body.replace("**", "<b>")
+
+        html_body = html_body.replace("**", "<b>")
         html_head = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,7 +44,6 @@ class MdToHtmlConverter:
 </head>
 <body>
 """
-
         html_tail = """\n</body>
 </html>"""
         return_html = html_head + html_body + html_tail
