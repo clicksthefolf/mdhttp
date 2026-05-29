@@ -3,6 +3,47 @@ import os
 from logger import Log
 from config import *
 
+class MdToHtmlConverter:
+    @staticmethod
+    def get_md_from_html(md_file: str) -> str:
+        #TODO: process md file before compiling html file.
+
+        page_title = "No Title md file"
+        html_body = ""
+        for line in md_file.split("\n"):
+            if line.startswith("# "):
+                html_body += f"<h1>{line[2:]}</h1>\n"
+            if line.startswith("## "):
+                html_body += f"<h2>{line[3:]}</h2>\n"
+            if line.startswith("### "):
+                html_body += f"<h3>{line[4:]}</h3>\n"
+            if line.startswith("#### "):
+                html_body += f"<h4>{line[5:]}</h4>\n"
+            if line.startswith("##### "):
+                html_body += f"<h5>{line[6:]}</h5>\n"  
+            if line.startswith("###### "):
+                html_body += f"<h6>{line[7:]}</h6>\n"
+            else:
+                html_body += line
+        print(md_file.splitlines())
+        print("End print")
+            
+        html_body.replace("**", "<b>")
+        html_head = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{page_title}</title>
+</head>
+<body>
+"""
+
+        html_tail = """\n</body>
+</html>"""
+        return_html = html_head + html_body + html_tail
+        return return_html.encode()
+
 class Server:
     def __init__(self):
         # Setup the socket.
@@ -73,11 +114,11 @@ class Server:
 
             header = (
                 "HTTP/1.1 200 OK\r\n"
-                f"Content-Length: {len(content)}\r\n"
+                f"Content-Length: {len(MdToHtmlConverter.get_md_from_html(content.decode()))}\r\n"
                 "\r\n"
             ).encode()
 
-            response = header + content
+            response = header + MdToHtmlConverter.get_md_from_html(content.decode())
 
         # If item not found
         except FileNotFoundError:
